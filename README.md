@@ -1,4 +1,6 @@
-# mobile-touchpad
+# my-mobile-touchpad
+
+forked from https://github.com/huoyijie/mobile-touchpad
 turn your phone into a touchpad :blush:
 
 # License
