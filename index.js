@@ -21,10 +21,12 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
  * SOFTWARE.
  */
-
+// require("imports?window=>{}!hammer")
 const robot = require("robotjs")
+// const Hammerjd = () => import('hammerjs')
 // Speed up the mouse.
 robot.setMouseDelay(2)
+robot.setKeyboardDelay(2)
 const { width, height } = robot.getScreenSize()
 console.debug('\ncomputer resolution', width, height)
 var pointer = robot.getMousePos()
@@ -53,6 +55,7 @@ app.use(render)
 app.use(bodyParser())
 app.use(router.routes())
 
+
 const parser = require("socket.io-msgpack-parser")
 const httpServer = createServer(app.callback())
 const io = new Server(httpServer, {
@@ -73,8 +76,10 @@ io.on('connection', (socket) => {
     const { clientWidth, clientHeight } = socket.handshake.query
     const x = buffer.readInt16LE(0)
     const y = buffer.readInt16LE(2)
-    const toX = pointer.x + Math.floor(x / clientWidth * width * 0.8)
-    const toY = pointer.y + Math.floor(y / clientHeight * height * 1.0)
+    // 调整鼠标速度 x
+    const toX = pointer.x + Math.floor(x / clientWidth * width * 1.8)
+    // 调整鼠标速度 y
+    const toY = pointer.y + Math.floor(y / clientHeight * height * 2.0)
     if (pressed) {
       robot.dragMouse(toX, toY)
     } else {
@@ -87,15 +92,17 @@ io.on('connection', (socket) => {
       robot.mouseToggle('up', 'left')
     }
   }).on('panleft', () => {
-    robot.scrollMouse(1, 0)
+    // 调整滑动速度
+    robot.scrollMouse(30, 0)
   }).on('panright', () => {
-    robot.scrollMouse(-1, 0)
+    robot.scrollMouse(-30, 0)
   }).on('panup', () => {
-    robot.scrollMouse(0, 1)
+    robot.scrollMouse(0, 30)
   }).on('pandown', () => {
-    robot.scrollMouse(0, -1)
+    robot.scrollMouse(0, -30)
   }).on('tap', () => {
     robot.mouseClick('left', false)
+    // robot.mouseClick('right', false)
   }).on('righttap', () => {
     robot.mouseClick('right', false)
   }).on('press', () => {
@@ -104,10 +111,31 @@ io.on('connection', (socket) => {
   }).on('pressup', () => {
     pressed = false
     robot.mouseToggle('up', 'left')
+  }).on('swiperight', () => {
+    // pressed = true
+    robot.keyTap('right', ['command', 'control'])
+  }).on('swipeleft', () => {
+    // pressed = false
+    robot.keyTap('left', ['command', 'control'])
+  }).on('swipeup', () => {
+    // pressed = false
+    robot.keyTap('tab', 'command')
+  }).on('swipedown', () => {
+    // pressed = false
+    robot.keyTap('d', 'command')
+  }).on('doublepress', (reason) => {    
+    // robot.keyTap('audio_vol_down')
+  }).on('triplepress', (reason) => {
+    // robot.keyTap('audio_vol_up')
+    robot.keyTap('command')
   }).on("disconnect", (reason) => {
     console.debug('socket disconnect', reason)
     socketSet.delete(socket)
   })
+  // .on('tripletap', () => {
+  //   robot.keyTap('command')
+  //   // robot.keyTap('audio_vol_down')
+  // })
 })
 
 httpServer.listen(3000)

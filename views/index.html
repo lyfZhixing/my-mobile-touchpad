@@ -24,6 +24,11 @@
 <html>
   <head>
     <title>TouchPad</title>
+    <meta name="full-screen" content="yes"/>
+    <meta name="browsermode" content="application"/>
+    <meta name="x5-fullscreen" content="true"/>
+    <meta name="x5-page-mode" content="app"/>
+    <meta name="360-fullscreen" content="true"/>
     <meta name="viewport" content="user-scalable=no, width=device-width, initial-scale=1, maximum-scale=1">
     <style>
       #myElement {
@@ -31,6 +36,21 @@
         width: 100%;
         height: 100%;
         color: white;
+        float: left;
+      }
+      #leftElement {
+        background: red;
+        width: 10%;
+        height: 100%;
+        color: white;
+        float: left;
+      }
+      #rightElement{
+        background: red;
+        width: 10%;
+        height: 100%;
+        color: white;
+        float: right;
       }
       body {
         margin: 0;
@@ -39,14 +59,20 @@
   </head>
   <body>
     <div id="myScroll">
+      
+      <!-- <div id="leftElement">
+      </div> -->
       <div id="myElement">
       </div>
+      <!-- <div id="rightElement">
+      </div> -->
     </div>
 
     <script src="/hammerjs/hammer.js"></script>
     <script src="/socket.io/socket.io.min.js"></script>
     <script src="/socket.io.msgpack.min.js"></script>
     <script>
+      window.onload=function(){window.history.pushState(null, null, '#index');};
       var myElement = document.getElementById('myElement')
       const { clientWidth, clientHeight } = myElement
       const socket = io({
@@ -72,8 +98,17 @@
       mc.add(new Hammer.Pan({ direction: Hammer.DIRECTION_ALL }))
       mc.add(new Hammer.Tap({ event: 'tap' }))
       mc.add(new Hammer.Tap({ event: 'righttap', pointers: 2 }))
+
+      mc.add(new Hammer.Press({ event: 'doublepress', pointers: 2 }))
+
+      mc.add(new Hammer.Press({ event: 'triplepress', pointers: 3 , time: 500}))
+
+      mc.add(new Hammer.Swipe({ pointers: 3 , direction: Hammer.DIRECTION_ALL}))
       mc.get('righttap').recognizeWith('tap')
+
       mc.add(new Hammer.Press({}))
+      // mc.add(new Hammer.Press({event: 'press', pointers: 1}))
+      // mc.add(new Hammer.Press({event: 'pressup', pointers: 1}))
 
       var norm = (xy, wh) => {
         if (xy < 0) {
@@ -116,17 +151,50 @@
         console.debug('righttap')
         socket.emit('righttap')
       }).on('press', (e) => {
+        // window.alert('press')
         e.preventDefault()
         socket.emit('press')
       }).on('pressup', (e) => {
+         // window.alert('pressup')
         e.preventDefault()
         socket.emit('pressup')
+      }).on('swipeup', (e) => {
+        e.preventDefault()
+        // window.alert(2)
+        socket.emit('swipeup')
+      }).on('swipedown', (e) => {
+        e.preventDefault()
+        // window.alert(2)
+        socket.emit('swipedown')
+      }).on('swipeleft', (e) => {
+        e.preventDefault()
+        // window.alert(2)
+        socket.emit('swipeleft')
+      }).on('swiperight', (e) => {
+        e.preventDefault()
+        // window.alert('swiperright')
+        socket.emit('swiperight')
+      }).on('doublepress', (e) => {
+        e.preventDefault()
+        // window.alert('doblepress')
+        socket.emit('doublepress')
+      }).on('doublepressup', (e) => {
+        e.preventDefault()
+        // window.alert('doblepressup')
+        socket.emit('doublepressup')
+      }).on('triplepress', (e) => {
+        e.preventDefault()
+        // window.alert('triplepress')
+        socket.emit('triplepress')
+      }).on('triplepressup', (e) => {
+        e.preventDefault()
+        // window.alert('triplepressup')
+        socket.emit('triplepressup')
       })
 
       var myScroll = document.getElementById('myScroll')
       var mc2 = new Hammer.Manager(myScroll)
       mc2.add(new Hammer.Pan({ direction: Hammer.DIRECTION_ALL, pointers: 2 }))
-
       mc2.on('panleft', (e) => {
         e.preventDefault()
         socket.emit('panleft')
@@ -140,6 +208,7 @@
         e.preventDefault()
         socket.emit('pandown')
       })
+
     </script>
   </body>
 </html>

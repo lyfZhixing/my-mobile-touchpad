@@ -14,7 +14,7 @@
     "koa": "^2.13.4",
     "koa-bodyparser": "^4.3.0",
     "koa-views": "^8.0.0",
-    "robotjs": "^0.6.0",
+    "robotjsfixed": "^0.6.0",
     "socket.io": "^4.4.1",
     "socket.io-client": "^4.4.1",
     "socket.io-msgpack-parser": "^3.0.1",
